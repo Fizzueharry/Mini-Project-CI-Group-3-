@@ -1,0 +1,119 @@
+<Name>dc_motor_fuzzy</Name>
+    <Type>mamdani</Type>
+    <AndMethod>min</AndMethod>
+    <OrMethod>max</OrMethod>
+    <ImpMethod>min</ImpMethod>
+    <AggMethod>max</AggMethod>
+    <DefuzzMethod>centroid</DefuzzMethod>
+    <Input>
+        <Name>e</Name>
+        <Range>-1.5 1.5</Range>
+        <MF>
+            <Name>NB</Name>
+            <Type>trapmf</Type>
+            <Params>-1.5 -1.5 -1 -0.5</Params>
+        </MF>
+        <MF>
+            <Name>NS</Name>
+            <Type>trimf</Type>
+            <Params>-1 -0.5 0</Params>
+        </MF>
+        <MF>
+            <Name>Z</Name>
+            <Type>trimf</Type>
+            <Params>-0.25 0 0.25</Params>
+        </MF>
+        <MF>
+            <Name>PS</Name>
+            <Type>trimf</Type>
+            <Params>0 0.5 1</Params>
+        </MF>
+        <MF>
+            <Name>PB</Name>
+            <Type>trapmf</Type>
+            <Params>0.5 1 1.5 1.5</Params>
+        </MF>
+    </Input>
+    <Input>
+        <Name>de</Name>
+        <Range>-0.5 0.5</Range>
+        <MF>
+            <Name>NB</Name>
+            <Type>trapmf</Type>
+            <Params>-0.5 -0.5 -0.25 -0.1</Params>
+        </MF>
+        <MF>
+            <Name>NS</Name>
+            <Type>trimf</Type>
+            <Params>-0.2 -0.1 0</Params>
+        </MF>
+        <MF>
+            <Name>Z</Name>
+            <Type>trimf</Type>
+            <Params>-0.05 0 0.05</Params>
+        </MF>
+        <MF>
+            <Name>PS</Name>
+            <Type>trimf</Type>
+            <Params>0 0.1 0.2</Params>
+        </MF>
+        <MF>
+            <Name>PB</Name>
+            <Type>trapmf</Type>
+            <Params>0.1 0.25 0.5 0.5</Params>
+        </MF>
+    </Input>
+    <Output>
+        <Name>u_out</Name>
+        <Range>0 12</Range>
+        <MF>
+            <Name>VL</Name>
+            <Type>trapmf</Type>
+            <Params>0 0 1 2</Params>
+        </MF>
+        <MF>
+            <Name>L</Name>
+            <Type>trimf</Type>
+            <Params>1 3 5</Params>
+        </MF>
+        <MF>
+            <Name>M</Name>
+            <Type>trimf</Type>
+            <Params>4 6 8</Params>
+        </MF>
+        <MF>
+            <Name>H</Name>
+            <Type>trimf</Type>
+            <Params>7 9 11</Params>
+        </MF>
+        <MF>
+            <Name>VH</Name>
+            <Type>trapmf</Type>
+            <Params>10 11 12 12</Params>
+        </MF>
+    </Output>
+    <Rule>1 1 5 1 1</Rule>
+    <Rule>1 2 5 1 1</Rule>
+    <Rule>1 3 5 1 1</Rule>
+    <Rule>1 4 4 1 1</Rule>
+    <Rule>1 5 3 1 1</Rule>
+    <Rule>2 1 5 1 1</Rule>
+    <Rule>2 2 4 1 1</Rule>
+    <Rule>2 3 4 1 1</Rule>
+    <Rule>2 4 3 1 1</Rule>
+    <Rule>2 5 2 1 1</Rule>
+    <Rule>3 1 4 1 1</Rule>
+    <Rule>3 2 4 1 1</Rule>
+    <Rule>3 3 3 1 1</Rule>
+    <Rule>3 4 2 1 1</Rule>
+    <Rule>3 5 2 1 1</Rule>
+    <Rule>4 1 3 1 1</Rule>
+    <Rule>4 2 2 1 1</Rule>
+    <Rule>4 3 2 1 1</Rule>
+    <Rule>4 4 1 1 1</Rule>
+    <Rule>4 5 1 1 1</Rule>
+    <Rule>5 1 2 1 1</Rule>
+    <Rule>5 2 1 1 1</Rule>
+    <Rule>5 3 1 1 1</Rule>
+    <Rule>5 4 1 1 1</Rule>
+    <Rule>5 5 1 1 1</Rule>

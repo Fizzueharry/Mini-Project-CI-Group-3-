@@ -1,0 +1,103 @@
+% DC Motor Parameters
+J = 0.01;   % Moment of inertia (kg.m^2)
+b = 0.1;    % Motor viscous friction constant (N.m.s)
+K = 0.01;   % Electromotive force constant (V/rad/sec)
+R = 1;      % Electric resistance (Ohm)
+L = 0.5;    % Electric inductance (H)
+
+% Transfer function (for open-loop and PID reference, not directly used by FLC dynamics)
+num = K;
+den = [L*J, (L*b + R*J), (R*b + K^2)];
+sys = tf(num, den);
+
+% Plot open-loop step response for reference
+figure;
+step(sys);
+title('DC Motor Open-Loop Response');
+xlabel('Time (s)');
+ylabel('Output (rad/s)');
+grid on;
+
+% PID Controller setup (for comparison if you want to add it back)
+Kp = 100;
+Ki = 200;
+Kd = 10;
+PID = pid(Kp, Ki, Kd);
+
+% Close-loop system with PID (for comparison if you want to add it back)
+cl_sys = feedback(PID * sys, 1);
+figure;
+step(cl_sys);
+title('DC Motor with PID Controller');
+xlabel('Time (s)');
+ylabel('Output (rad/s)');
+grid on;
+
+
+% --- Fuzzy Logic Controller (FLC) Simulation ---
+
+% Load your .fis file. Ensure 'dc_motor_fuzzy.fis' is in the same directory.
+try
+    fis = readfis('dc_motor_fuzzy');
+    disp('Fuzzy Logic Controller (dc_motor_fuzzy.fis) loaded successfully.');
+catch
+    disp('Error: dc_motor_fuzzy.fis not found or invalid.');
+    disp('Please ensure dc_motor_fuzzy.fis is in the same directory and is correctly formatted.');
+    return; % Exit script if FIS file not found
+end
+
+% Simulation parameters
+dt = 0.01;          % Time step
+T = 5;              % Total simulation time
+time = 0:dt:T;      % Time vector
+N = length(time);
+
+speed = zeros(1,N); % Array to store motor speed
+ref = ones(1,N);    % Reference speed = 1 rad/s (desired speed)
+u = zeros(1,N);     % Array to store control signal (motor voltage)
+
+e_prev = 0;         % Previous error for calculating delta error
+
+% Simulation loop for Fuzzy Logic Control
+disp('Starting Fuzzy Logic Control simulation...');
+for k = 2:N
+    % Calculate error
+    e = ref(k) - speed(k-1);
+
+    % Calculate delta error (change in error)
+    de = e - e_prev;
+
+    % Evaluate fuzzy system to get control signal 'u_out'
+    % The 'u' here is the voltage applied to the motor
+    u(k) = evalfis([e, de], fis); % IMPORTANT: This now correctly uses 'e' and 'de' from your script
+
+    % Limit the control signal (voltage) to a practical range (e.g., 0 to 12V)
+    % This is important for real-world motor control
+    u(k) = max(0, min(12, u(k)));
+
+    % Update motor speed using simplified dynamics (from your previous code)
+    % This is a discrete approximation of the motor's first-order dynamics
+    % d_speed/dt = (-b/J)*speed + (K/J)*u
+    speed(k) = speed(k-1) + dt*((-b/J)*speed(k-1) + (K/J)*u(k));
+
+    % Store current error as previous error for next iteration
+    e_prev = e;
+end
+disp('Fuzzy Logic Control simulation complete.');
+
+% Plot Fuzzy Logic Controller Results
+figure;
+plot(time, ref, 'k--', 'LineWidth', 1.5); % Desired reference speed
+hold on;
+plot(time, speed, 'r-', 'LineWidth', 2); % Actual motor speed with FLC
+xlabel('Time (s)');
+ylabel('Speed (rad/s)');
+title('DC Motor Speed using Fuzzy Logic Controller');
+legend('Reference Speed', 'Actual Speed (FLC)');
+grid on;
+grid minor;
+ylim([-0.1 1.2]); % Adjust y-limits for better visualization
+
+% Calculate and display Mean Squared Error
+MSE = mean((ref - speed).^2);
+fprintf('FLC MSE: %.4f\n', MSE);
